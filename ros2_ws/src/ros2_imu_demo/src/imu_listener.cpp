@@ -60,7 +60,12 @@ private:
         t.transform.translation.y = 0.0;
         t.transform.translation.z = 0.0;
 
-        t.transform.rotation = msg->orientation;
+        // swap x and y and invert x axis of quaternion to take into account imu orientation, otherwise, comment these lines
+        geometry_msgs::msg::Quaternion q = msg->orientation;
+        std::swap(q.x, q.y);
+        q.x = -q.x;
+
+        t.transform.rotation = q;
 
         tf_broadcaster_->sendTransform(t);
     }
