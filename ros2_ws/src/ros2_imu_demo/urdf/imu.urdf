@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<robot name="imu">
+
+  <link name="world"/>
+
+  <link name="imu_link">
+
+    <!-- Plane Mesh -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ros2_imu_demo/meshes/plane.stl" scale=".005 .005 .005"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+
+  </link>
+
+  <joint name="world_to_imu" type="fixed">
+    <parent link="world"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>
