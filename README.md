@@ -15,15 +15,55 @@ This project demonstrates:
 - Integration with Micro-ROS ESP32 IMU publisher
 - Simple robot model visualization in RViz
 
+This project depends on a companion Micro-ROS ESP32 repository that publishes MPU6050 IMU data to ROS 2.
+
+Required publisher repository:
+
+- https://github.com/kimsniper/micro_ros_mpu6050
+
 ---
 
-## Clone Repository
+## Clone Repositories
+
+Clone this listener package:
 
 ```bash
 cd ~
 git clone https://github.com/kimsniper/ros2_imu_demo.git
 cd ~/ros2_imu_demo
 ```
+
+Clone the required Micro-ROS MPU6050 publisher repository:
+
+```bash
+cd ~
+git clone https://github.com/kimsniper/micro_ros_mpu6050.git
+```
+
+---
+
+## Required Dependency Repository
+
+This project is only the ROS 2 listener and visualization component.
+
+To receive IMU data, you must also use the Micro-ROS ESP32 MPU6050 publisher:
+
+- https://github.com/kimsniper/micro_ros_mpu6050
+
+The publisher repository:
+
+- Reads MPU6050 sensor data on ESP32
+- Computes orientation data
+- Publishes `sensor_msgs/msg/Imu`
+- Sends IMU messages to ROS 2 through Micro-ROS
+
+Data published from that repository is consumed by this package through:
+
+```text
+/imu/data
+```
+
+Without the Micro-ROS MPU6050 publisher running, this listener will not receive any IMU data.
 
 ---
 
@@ -148,8 +188,13 @@ This robot model represents the IMU frame in RViz.
 
 ## Data Flow
 
-```
-MPU6050 (ESP32 Micro-ROS)
+```text
+MPU6050 Sensor
+        ↓
+ESP32 Micro-ROS Node
+(micro_ros_mpu6050)
+        ↓
+Micro-ROS Agent
         ↓
 /imu/data (ROS 2 topic)
         ↓
@@ -177,10 +222,28 @@ q.x = -q.x;
 
 ## Micro-ROS Dependency Reminder
 
-Start agent before running ESP32:
+Before running this package:
+
+1. Flash and run the ESP32 firmware from:
+
+   https://github.com/kimsniper/micro_ros_mpu6050
+
+2. Start the Micro-ROS Agent:
 
 ```bash
 docker run -it --rm --net=host microros/micro-ros-agent:humble udp4 --port 8888 -v6
+```
+
+3. Verify IMU messages are being published:
+
+```bash
+ros2 topic echo /imu/data
+```
+
+4. Launch this package:
+
+```bash
+ros2 launch ros2_imu_demo imu_demo.launch.py
 ```
 
 ---
@@ -210,6 +273,14 @@ Add:
 - TF
 - RobotModel (optional)
 - IMU display
+
+---
+
+### Working Demo Video
+![Demo](./images/imu_demo.gif)
+
+
+Imu Demo: https://www.linkedin.com/feed/update/urn:li:activity:7453299633088540672/
 
 ---
 
